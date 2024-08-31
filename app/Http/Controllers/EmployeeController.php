@@ -21,12 +21,22 @@ class EmployeeController extends Controller
     {
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
+        $search = $request->get('search', '');
 
-        $employees = Employee::skip(($page - 1) * $perPage)
-                            ->take($perPage)
-                            ->get();
+        $query = Employee::query();
 
-        $total = Employee::count();
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('position', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%')
+                ->orWhere('age', 'like', '%' . $search . '%');
+        }
+
+        $employees = $query->skip(($page - 1) * $perPage)
+                        ->take($perPage)
+                        ->get();
+
+        $total = $query->count();
 
         return response()->json([
             'employees' => $employees,

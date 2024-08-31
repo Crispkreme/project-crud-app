@@ -32,6 +32,9 @@
             <table class="table table-bordered table-striped">
                 <div class="row mb-3">
                     <div class="col-md-6">
+                        <input type="text" id="search-input" placeholder="Search employees..." />
+                    </div>
+                    <div class="col-md-6">
                         <label for="records-per-page">Show</label>
                         <select id="records-per-page" class="form-select w-auto d-inline-block">
                             <option value="10">10</option>
@@ -131,6 +134,7 @@
         $(document).ready(function() {
 
             let perPage = $('#records-per-page').val();
+            let searchQuery = '';
 
             fetchEmployee(1, perPage);
 
@@ -140,13 +144,15 @@
                     url: "{{ route('fetch-employee') }}",
                     data: {
                         page: page,
-                        per_page: perPage
+                        per_page: perPage,
+                        search: searchQuery // Include the search query in the AJAX request
                     },
                     dataType: "json",
                     success: (response) => {
                         let employees = response.employees;
                         let html = '';
 
+                        // Generate the employee rows
                         $.each(employees, function (key, item) {
                             let autoIncrementId = key + 1 + (response.per_page * (response.current_page - 1));
                             html += '<tr>\
@@ -165,16 +171,19 @@
 
                         $('tbody').html(html);
 
+                        // Pagination logic
                         let totalPages = Math.ceil(response.total / response.per_page);
                         let currentPage = response.current_page;
                         let paginationHtml = '';
 
+                        // Previous button
                         if (currentPage > 1) {
                             paginationHtml += `<li class="page-item"><a href="#" class="page-link prev" data-page="${currentPage - 1}">&laquo; Previous</a></li>`;
                         } else {
                             paginationHtml += `<li class="page-item disabled"><span class="page-link">&laquo; Previous</span></li>`;
                         }
 
+                        // Page numbers
                         for (let i = 1; i <= totalPages; i++) {
                             if (i == currentPage) {
                                 paginationHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
@@ -183,6 +192,7 @@
                             }
                         }
 
+                        // Next button
                         if (currentPage < totalPages) {
                             paginationHtml += `<li class="page-item"><a href="#" class="page-link next" data-page="${currentPage + 1}">Next &raquo;</a></li>`;
                         } else {
@@ -205,6 +215,11 @@
 
             $(document).on('change', '#records-per-page', function() {
                 perPage = $(this).val();
+                fetchEmployee(1);
+            });
+
+            $(document).on('input', '#search-input', function() {
+                searchQuery = $(this).val();
                 fetchEmployee(1);
             });
 
