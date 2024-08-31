@@ -17,29 +17,22 @@ class EmployeeController extends Controller
         return view('index');
     }
 
-    // public function fetchEmployee()
-    // {
-    //     $employees = Employee::all();
-
-    //     return response()->json([
-    //         'employees' => $employees
-    //     ], 200);
-    // }
-
     public function fetchEmployee(Request $request)
     {
-        $perPage = 5;
-        $currentPage = $request->input('page', 1);
-        $offset = ($currentPage - 1) * $perPage;
+        $perPage = $request->get('per_page', 10);
+        $page = $request->get('page', 1);
+
+        $employees = Employee::skip(($page - 1) * $perPage)
+                            ->take($perPage)
+                            ->get();
 
         $total = Employee::count();
-        $employees = Employee::skip($offset)->take($perPage)->get();
 
         return response()->json([
             'employees' => $employees,
             'total' => $total,
             'per_page' => $perPage,
-            'current_page' => $currentPage
+            'current_page' => $page,
         ]);
     }
 
