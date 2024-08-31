@@ -128,6 +128,7 @@
                         let employees = response.employees;
                         let html = '';
 
+                        // Generate the employee rows
                         $.each(employees, function (key, item) {
                             let autoIncrementId = key + 1 + (response.per_page * (response.current_page - 1));
                             html += '<tr>\
@@ -146,10 +147,32 @@
 
                         $('tbody').html(html);
 
+                        // Pagination logic
                         let totalPages = Math.ceil(response.total / response.per_page);
+                        let currentPage = response.current_page;
                         let paginationHtml = '';
+
+                        // Previous button
+                        if (currentPage > 1) {
+                            paginationHtml += `<li class="page-item"><a href="#" class="page-link prev" data-page="${currentPage - 1}">&laquo; Previous</a></li>`;
+                        } else {
+                            paginationHtml += `<li class="page-item disabled"><span class="page-link">&laquo; Previous</span></li>`;
+                        }
+
+                        // Page numbers
                         for (let i = 1; i <= totalPages; i++) {
-                            paginationHtml += `<a href="#" class="page-link" data-page="${i}">${i}</a> `;
+                            if (i == currentPage) {
+                                paginationHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+                            } else {
+                                paginationHtml += `<li class="page-item"><a href="#" class="page-link" data-page="${i}">${i}</a></li>`;
+                            }
+                        }
+
+                        // Next button
+                        if (currentPage < totalPages) {
+                            paginationHtml += `<li class="page-item"><a href="#" class="page-link next" data-page="${currentPage + 1}">Next &raquo;</a></li>`;
+                        } else {
+                            paginationHtml += `<li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>`;
                         }
 
                         $('#pagination-links').html(paginationHtml);
@@ -159,6 +182,12 @@
                     },
                 });
             }
+
+            $(document).on('click', '#pagination-links a.page-link', function(e) {
+                e.preventDefault();
+                let page = $(this).data('page');
+                fetchEmployee(page);
+            });
 
             $("#EmployeeForm").submit(function(e) {
                 e.preventDefault();
