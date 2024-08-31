@@ -62,7 +62,7 @@
                 </tbody>
             </table>
 
-            <div id="pagination-links"></div>
+            <div id="pagination-links" style="display:flex;"></div>
         </div>
     </div>
 
@@ -178,25 +178,25 @@
 
                         // Previous button
                         if (currentPage > 1) {
-                            paginationHtml += `<li class="page-item"><a href="#" class="page-link prev" data-page="${currentPage - 1}">&laquo; Previous</a></li>`;
+                            paginationHtml += `<li class="page-item" style="list-style: none;"><a href="#" class="page-link prev" data-page="${currentPage - 1}">&laquo; Previous</a></li>`;
                         } else {
-                            paginationHtml += `<li class="page-item disabled"><span class="page-link">&laquo; Previous</span></li>`;
+                            paginationHtml += `<li class="page-item disabled" style="list-style: none;"><span class="page-link">&laquo; Previous</span></li>`;
                         }
 
                         // Page numbers
                         for (let i = 1; i <= totalPages; i++) {
                             if (i == currentPage) {
-                                paginationHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+                                paginationHtml += `<li class="page-item active" style="list-style: none;"><span class="page-link">${i}</span></li>`;
                             } else {
-                                paginationHtml += `<li class="page-item"><a href="#" class="page-link" data-page="${i}">${i}</a></li>`;
+                                paginationHtml += `<li class="page-item" style="list-style: none;"><a href="#" class="page-link" data-page="${i}">${i}</a></li>`;
                             }
                         }
 
                         // Next button
                         if (currentPage < totalPages) {
-                            paginationHtml += `<li class="page-item"><a href="#" class="page-link next" data-page="${currentPage + 1}">Next &raquo;</a></li>`;
+                            paginationHtml += `<li class="page-item" style="list-style: none;"><a href="#" class="page-link next" data-page="${currentPage + 1}">Next &raquo;</a></li>`;
                         } else {
-                            paginationHtml += `<li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>`;
+                            paginationHtml += `<li class="page-item disabled" style="list-style: none;"><span class="page-link">Next &raquo;</span></li>`;
                         }
 
                         $('#pagination-links').html(paginationHtml);
