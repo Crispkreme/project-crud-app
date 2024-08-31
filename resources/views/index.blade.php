@@ -44,6 +44,8 @@
                 <tbody>
                 </tbody>
             </table>
+
+            <div id="pagination-links"></div>
         </div>
     </div>
 
@@ -116,41 +118,47 @@
 
             fetchEmployee();
 
-            function fetchEmployee() {
+            function fetchEmployee(page = 1) {
                 $.ajax({
                     type: "GET",
                     url: "{{ route('fetch-employee') }}",
-                    cache: false,
-                    contentType: false,
-                    processData: false,
+                    data: { page: page },
                     dataType: "json",
                     success: (response) => {
+                        let employees = response.employees;
+                        let html = '';
 
-                        $('tbody').html('');
-                        $.each(response.employees, function (key, item) {
-                            let autoIncrementId = key + 1;
-
-                            $('tbody').append(
-                                '<tr>\
-                                    <td>'+autoIncrementId+'</td>\
-                                    <td>'+item.name+'</td>\
-                                    <td>'+item.age+'</td>\
-                                    <td>'+item.position+'</td>\
-                                    <td>'+item.address+'</td>\
-                                    <td>' + formatDate(item.created_at) + '</td>\
-                                    <td>\
-                                        <button type="button" value="'+item.id+'" class="edit_btn btn btn-primary btn-sm">Edit</button>\
-                                        <button type="button" value="'+item.id+'" class="delete_btn btn btn-danger btn-sm">Delete</button>\
-                                    </td>\
-                                </tr>'
-                            );
+                        $.each(employees, function (key, item) {
+                            let autoIncrementId = key + 1 + (response.per_page * (response.current_page - 1));
+                            html += '<tr>\
+                                        <td>' + autoIncrementId + '</td>\
+                                        <td>' + item.name + '</td>\
+                                        <td>' + item.age + '</td>\
+                                        <td>' + item.position + '</td>\
+                                        <td>' + item.address + '</td>\
+                                        <td>' + formatDate(item.created_at) + '</td>\
+                                        <td>\
+                                            <button type="button" value="' + item.id + '" class="edit_btn btn btn-primary btn-sm">Edit</button>\
+                                            <button type="button" value="' + item.id + '" class="delete_btn btn btn-danger btn-sm">Delete</button>\
+                                        </td>\
+                                    </tr>';
                         });
+
+                        $('tbody').html(html);
+
+                        let totalPages = Math.ceil(response.total / response.per_page);
+                        let paginationHtml = '';
+                        for (let i = 1; i <= totalPages; i++) {
+                            paginationHtml += `<a href="#" class="page-link" data-page="${i}">${i}</a> `;
+                        }
+
+                        $('#pagination-links').html(paginationHtml);
                     },
                     error: function(response) {
                         console.log("errors:", response);
                     },
                 });
-            };
+            }
 
             $("#EmployeeForm").submit(function(e) {
                 e.preventDefault();
@@ -271,6 +279,13 @@
 
             $('#employeeModalBtn').on('click', function() {
                 $("#employeeModalLabel").html("Add New Employee");
+            });
+
+            $(document).on('click', '.page-link', function(event) {
+                event.preventDefault();
+
+                let page = $(this).data('page');
+                fetchEmployee(page);
             });
 
             function formatDate(dateString) {
