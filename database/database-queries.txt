@@ -1,0 +1,26 @@
+// count my employee base on the admin
+SELECT 
+    u.id AS admin_id, 
+    u.email AS admin_email, 
+    COUNT(e.id) AS employee_count 
+FROM 
+    `users` u 
+LEFT JOIN 
+    `employees` e ON u.id = e.referral_id 
+WHERE
+    u.role = 'admin' 
+GROUP BY 
+    u.id, u.email;
+
+// displaying all of the employee
+SELECT 
+    u.email AS admin_email,
+    e.name AS employee_name,
+    e.address AS employee_address,
+    e.position AS employee_position
+FROM 
+    `users` u
+JOIN 
+    `employees` e ON u.id = e.referral_id
+WHERE 
+    u.role = 'admin' AND u.id = 1; 
